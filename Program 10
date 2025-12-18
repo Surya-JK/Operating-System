@@ -1,0 +1,44 @@
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <queue>
+#include <condition_variable>
+using namespace std;
+
+queue<int> buffer;
+const unsigned int bufferSize = 5;
+mutex mtx;
+condition_variable notFull, notEmpty;
+
+void producer() {
+    for(int i=1; i<=10; ++i) {
+        unique_lock<mutex> lock(mtx);
+        notFull.wait(lock, [] { return buffer.size() < bufferSize; });
+        
+        buffer.push(i);
+        cout << "Produced: " << i << endl;
+        
+        notEmpty.notify_one();
+    }
+}
+
+void consumer() {
+    for(int i=1; i<=10; ++i) {
+        unique_lock<mutex> lock(mtx);
+        notEmpty.wait(lock, [] { return !buffer.empty(); });
+        
+        int val = buffer.front();
+        buffer.pop();
+        cout << "Consumed: " << val << endl;
+        
+        notFull.notify_one();
+    }
+}
+
+int main() {
+    thread t1(producer);
+    thread t2(consumer);
+    t1.join();
+    t2.join();
+    return 0;
+}
