@@ -1,0 +1,32 @@
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <vector>
+using namespace std;
+
+mutex chopsticks[5];
+
+void philosopher(int i) {
+    // To prevent deadlock, ensure order of picking sticks
+    int first = min(i, (i + 1) % 5);
+    int second = max(i, (i + 1) % 5);
+
+    chopsticks[first].lock();
+    chopsticks[second].lock();
+    
+    cout << "Philosopher " << i << " is eating." << endl;
+    this_thread::sleep_for(chrono::milliseconds(100)); // Eat
+    
+    chopsticks[second].unlock();
+    chopsticks[first].unlock();
+    cout << "Philosopher " << i << " finished eating." << endl;
+}
+
+int main() {
+    vector<thread> threads;
+    for (int i = 0; i < 5; ++i) {
+        threads.push_back(thread(philosopher, i));
+    }
+    for (auto& t : threads) t.join();
+    return 0;
+}
