@@ -1,0 +1,42 @@
+#include <iostream>
+#include <queue>
+using namespace std;
+
+struct Process {
+    int id;
+    int burstTime;
+    int remainingTime;
+};
+
+void roundRobin(Process proc[], int n, int quantum) {
+    queue<int> q;
+    int time = 0;
+    int completed = 0;
+    
+    // Push all processes to queue initially
+    for(int i = 0; i < n; i++) q.push(i);
+
+    while (completed < n) {
+        int i = q.front();
+        q.pop();
+
+        if (proc[i].remainingTime > quantum) {
+            time += quantum;
+            proc[i].remainingTime -= quantum;
+            q.push(i); // Re-queue
+        } else {
+            time += proc[i].remainingTime; // Finish execution
+            cout << "Process " << proc[i].id << " finished at time " << time << endl;
+            proc[i].remainingTime = 0;
+            completed++;
+        }
+    }
+}
+
+int main() {
+    Process proc[] = {{1, 10, 15}, {2, 5, 2}, {3, 5, 8}};
+    int n = 3;
+    int quantum = 2;
+    roundRobin(proc, n, quantum);
+    return 0;
+}
