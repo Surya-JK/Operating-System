@@ -1,0 +1,33 @@
+#include <iostream>
+using namespace std;
+
+int main() {
+    // Disk memory: 0 = Free, 1 = Allocated
+    int disk[50] = {0}; 
+    int startBlock, length;
+
+    // Example Input
+    startBlock = 5;
+    length = 3;
+
+    // Check availability
+    bool canAllocate = true;
+    for (int i = startBlock; i < startBlock + length; i++) {
+        if (disk[i] == 1) {
+            canAllocate = false;
+            break;
+        }
+    }
+
+    if (canAllocate) {
+        // Allocate blocks
+        for (int i = startBlock; i < startBlock + length; i++) {
+            disk[i] = 1;
+        }
+        cout << "File allocated sequentially from block " << startBlock << " to " << (startBlock + length - 1) << endl;
+    } else {
+        cout << "Allocation failed: Not enough contiguous space." << endl;
+    }
+
+    return 0;
+}
