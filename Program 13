@@ -1,0 +1,31 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int main() {
+    int pages[] = {1, 3, 0, 3, 5, 6, 3};
+    int n = 7;
+    int capacity = 3;
+    vector<int> frames;
+    int faults = 0;
+
+    for (int i = 0; i < n; i++) {
+        auto it = find(frames.begin(), frames.end(), pages[i]);
+
+        if (it != frames.end()) {
+            // HIT: Move page to the end (Most Recently Used)
+            frames.erase(it);
+            frames.push_back(pages[i]);
+        } else {
+            // MISS
+            if (frames.size() == capacity) {
+                frames.erase(frames.begin()); // Remove Least Recently Used (front)
+            }
+            frames.push_back(pages[i]); // Add new page to end
+            faults++;
+        }
+    }
+    cout << "Total LRU Page Faults: " << faults << endl;
+    return 0;
+}
