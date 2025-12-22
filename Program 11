@@ -1,0 +1,22 @@
+#include <iostream>
+#include <thread>
+
+using namespace std;
+
+// Function to be executed by threads
+void worker(int id) {
+    cout << "Thread " << id << " is running." << endl;
+}
+
+int main() {
+    // Create threads
+    thread t1(worker, 1);
+    thread t2(worker, 2);
+
+    // Wait for threads to finish
+    t1.join();
+    t2.join();
+
+    cout << "All threads finished." << endl;
+    return 0;
+}
