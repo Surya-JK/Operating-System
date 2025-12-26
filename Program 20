@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+struct UserDirectory {
+    char dname[10];      // Name of the User Directory
+    char fname[10][10];  // Files inside this User Directory
+    int fcnt;            // File count for this user
+};
+
+struct UserDirectory dir[10]; // Array of users
+
+int main() {
+    int i, ch, dcnt, k;
+    char f[10], d[10];
+
+    printf("Enter number of users (Master Directory Size): ");
+    scanf("%d", &dcnt);
+
+    // Initialize User Directories
+    for(i = 0; i < dcnt; i++) {
+        printf("Enter name of User Directory %d: ", i + 1);
+        scanf("%s", dir[i].dname);
+        dir[i].fcnt = 0;
+    }
+
+    while(1) {
+        printf("\n\n--- MASTER DIRECTORY SYSTEM ---\n");
+        printf("1. Create File\t2. Delete File\t3. Search File\t4. Display Files\t5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &ch);
+
+        if(ch == 5) exit(0);
+
+        // Step 1: Select the User Directory
+        printf("\nEnter name of the User Directory: ");
+        scanf("%s", d);
+
+        int u_idx = -1; // User Index
+        for(i = 0; i < dcnt; i++) {
+            if(strcmp(d, dir[i].dname) == 0) {
+                u_idx = i;
+                break;
+            }
+        }
+
+        if(u_idx == -1) {
+            printf("Error: User Directory not found.");
+            continue;
+        }
+
+        // Step 2: Perform Operation in that User Directory
+        switch(ch) {
+            case 1: // Create
+                printf("Enter name of the file to create: ");
+                scanf("%s", f);
+                
+                int exists = 0;
+                for(k = 0; k < dir[u_idx].fcnt; k++) {
+                    if(strcmp(f, dir[u_idx].fname[k]) == 0) {
+                        exists = 1;
+                        break;
+                    }
+                }
+                
+                if(exists) {
+                    printf("Error: File already exists in %s.", dir[u_idx].dname);
+                } else {
+                    strcpy(dir[u_idx].fname[dir[u_idx].fcnt], f);
+                    dir[u_idx].fcnt++;
+                    printf("File %s created in %s.", f, dir[u_idx].dname);
+                }
+                break;
+
+            case 2: // Delete
+                printf("Enter name of the file to delete: ");
+                scanf("%s", f);
+                
+                int found_del = 0;
+                for(k = 0; k < dir[u_idx].fcnt; k++) {
+                    if(strcmp(f, dir[u_idx].fname[k]) == 0) {
+                        // Shift files left
+                        for(int j = k; j < dir[u_idx].fcnt - 1; j++) {
+                            strcpy(dir[u_idx].fname[j], dir[u_idx].fname[j+1]);
+                        }
+                        dir[u_idx].fcnt--;
+                        printf("File %s deleted from %s.", f, dir[u_idx].dname);
+                        found_del = 1;
+                        break;
+                    }
+                }
+                if(!found_del) printf("Error: File not found.");
+                break;
+
+            case 3: // Search
+                printf("Enter name of the file to search: ");
+                scanf("%s", f);
+                
+                int found_search = 0;
+                for(k = 0; k < dir[u_idx].fcnt; k++) {
+                    if(strcmp(f, dir[u_idx].fname[k]) == 0) {
+                        printf("File found in %s at position %d.", dir[u_idx].dname, k+1);
+                        found_search = 1;
+                        break;
+                    }
+                }
+                if(!found_search) printf("File not found.");
+                break;
+
+            case 4: // Display
+                if(dir[u_idx].fcnt == 0)
+                    printf("\n%s is Empty.", dir[u_idx].dname);
+                else {
+                    printf("\nFiles in %s Directory: ", dir[u_idx].dname);
+                    for(k = 0; k < dir[u_idx].fcnt; k++)
+                        printf("\t%s", dir[u_idx].fname[k]);
+                }
+                break;
+        }
+    }
+    return 0;
+}
