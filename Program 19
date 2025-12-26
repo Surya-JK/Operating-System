@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+struct {
+    char dname[10];
+    char fname[10][10];
+    int fcnt;
+} dir;
+
+int main() {
+    int i, ch, k;
+    char f[10];
+    dir.fcnt = 0;
+
+    printf("Enter name of directory: ");
+    scanf("%s", dir.dname);
+
+    while(1) {
+        printf("\n\n--- %s DIRECTORY ---\n", dir.dname);
+        printf("1. Create File\t2. Delete File\t3. Search File\t4. Display Files\t5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &ch);
+
+        switch(ch) {
+            case 1: // Create
+                printf("\nEnter the name of the file: ");
+                scanf("%s", f);
+                
+                // Check for duplicates
+                int exists = 0;
+                for(i = 0; i < dir.fcnt; i++) {
+                    if(strcmp(f, dir.fname[i]) == 0) {
+                        exists = 1;
+                        break;
+                    }
+                }
+                
+                if(exists) {
+                    printf("Error: File %s already exists.", f);
+                } else {
+                    strcpy(dir.fname[dir.fcnt], f);
+                    dir.fcnt++;
+                    printf("File %s created.", f);
+                }
+                break;
+
+            case 2: // Delete
+                printf("\nEnter the name of the file: ");
+                scanf("%s", f);
+                
+                int found_del = 0;
+                for(i = 0; i < dir.fcnt; i++) {
+                    if(strcmp(f, dir.fname[i]) == 0) {
+                        // Shift elements to fill the gap
+                        for(k = i; k < dir.fcnt - 1; k++) {
+                            strcpy(dir.fname[k], dir.fname[k+1]);
+                        }
+                        dir.fcnt--;
+                        printf("File %s is deleted.", f);
+                        found_del = 1;
+                        break;
+                    }
+                }
+                if(!found_del) printf("Error: File %s not found.", f);
+                break;
+
+            case 3: // Search
+                printf("\nEnter the name of the file: ");
+                scanf("%s", f);
+                
+                int found_search = 0;
+                for(i = 0; i < dir.fcnt; i++) {
+                    if(strcmp(f, dir.fname[i]) == 0) {
+                        printf("File %s is found at position %d.", f, i+1);
+                        found_search = 1;
+                        break;
+                    }
+                }
+                if(!found_search) printf("File %s not found.", f);
+                break;
+
+            case 4: // Display
+                if(dir.fcnt == 0)
+                    printf("\nDirectory Empty");
+                else {
+                    printf("\nThe Files are: ");
+                    for(i = 0; i < dir.fcnt; i++)
+                        printf("\t%s", dir.fname[i]);
+                }
+                break;
+
+            case 5:
+                exit(0);
+        }
+    }
+    return 0;
+}
